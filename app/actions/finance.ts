@@ -33,7 +33,7 @@ export async function addExpense(formData: FormData) {
     if (error) throw error
 
     revalidatePath('/dashboard/finance')
-    return { success: true }
+    // Removido o return { success: true } para agradar ao TypeScript
   } catch (error) {
     console.error('Erro ao adicionar despesa:', error)
     throw new Error('Falha ao registar a despesa no banco de dados.')
@@ -86,8 +86,6 @@ export async function deleteExpense(expenseId: string) {
 export async function getBarberStatement(professionalId: string) {
   const supabase = await createClient()
 
-  // Busca cortes finalizados cuja comissão ainda não foi paga
-  // Traz a taxa fixa do plano (se o corte foi feito usando plano)
   const { data: appointments } = await supabase
     .from('appointments')
     .select(`
@@ -100,7 +98,6 @@ export async function getBarberStatement(professionalId: string) {
     .eq('status', 'completed')
     .eq('commission_status', 'pending')
 
-  // Busca os vales/adiantamentos pendentes deste barbeiro
   const { data: advances } = await supabase
     .from('barber_advances')
     .select('id, amount, description, created_at')
@@ -112,11 +109,9 @@ export async function getBarberStatement(professionalId: string) {
   let cortesAvulsosCount = 0;
   let cortesPlanosCount = 0;
 
-  // Assume 50% de comissão para cortes normais avulsos
   const COMISSAO_PADRAO = 0.5; 
 
   appointments?.forEach((apt: any) => {
-    // Se tem ID de assinatura E conseguiu buscar o plano vinculado
     if (apt.used_subscription_id && apt.client_subscriptions?.plans) {
       totalPlanos += Number(apt.client_subscriptions.plans.barber_fixed_commission);
       cortesPlanosCount++;
@@ -127,8 +122,6 @@ export async function getBarberStatement(professionalId: string) {
   });
 
   const totalVales = advances?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
-  
-  // (Comissões Normais + Comissões de Planos) - Vales
   const valorLiquidoReceber = (totalAvulso + totalPlanos) - totalVales;
 
   return {
@@ -166,7 +159,7 @@ export async function addBarberAdvance(formData: FormData) {
 
     if (error) throw error
     revalidatePath('/dashboard/finance')
-    return { success: true }
+    // Removido o return { success: true }
   } catch (error) {
     console.error('Erro ao lançar vale:', error)
     throw new Error('Falha ao registrar adiantamento.')
@@ -178,7 +171,6 @@ export async function settleBarberAccount(professionalId: string) {
   const supabase = await createClient()
 
   try {
-    // Marca todos os cortes pendentes como PAGOS
     const { error: aptError } = await supabase
       .from('appointments')
       .update({ commission_status: 'settled' })
@@ -188,7 +180,6 @@ export async function settleBarberAccount(professionalId: string) {
 
     if (aptError) throw aptError
 
-    // Marca todos os vales pendentes como DESCONTADOS
     const { error: advError } = await supabase
       .from('barber_advances')
       .update({ status: 'settled' })
@@ -198,7 +189,7 @@ export async function settleBarberAccount(professionalId: string) {
     if (advError) throw advError
 
     revalidatePath('/dashboard/finance')
-    return { success: true }
+    // Removido o return { success: true }
   } catch (error) {
     console.error('Erro ao fechar acerto:', error)
     throw new Error('Falha ao processar o pagamento.')

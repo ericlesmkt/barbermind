@@ -29,7 +29,7 @@ export default async function FinanceDashboard() {
   let totalCutsRevenue = 0;
   let totalCommissionsPaid = 0;
 
-  appointments?.forEach(apt => {
+  appointments?.forEach((apt: any) => {
     const price = Number(apt.price);
     const rate = apt.professionals?.commission_rate ? Number(apt.professionals.commission_rate) : 0.5;
     totalCutsRevenue += price;

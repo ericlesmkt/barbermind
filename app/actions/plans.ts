@@ -33,7 +33,7 @@ export async function createPlan(formData: FormData) {
     if (error) throw error
     
     revalidatePath('/dashboard/plans')
-    return { success: true }
+    // Removido o return { success: true } para passar na validação do Next.js
   } catch (error) {
     console.error('Erro ao criar plano:', error)
     throw new Error('Falha ao cadastrar o plano.')
@@ -58,6 +58,7 @@ export async function togglePlanStatus(planId: string, currentStatus: boolean) {
     throw new Error('Falha ao atualizar status.')
   }
 }
+
 // ==========================================
 // 3. VENDER / ATRIBUIR PLANO AO CLIENTE
 // ==========================================
@@ -107,6 +108,7 @@ export async function assignPlanToClient(clientId: string, formData: FormData) {
     throw new Error('Falha ao adicionar o plano à carteira do cliente.')
   }
 }
+
 // ==========================================
 // 4. CANCELAR / REMOVER PLANO DO CLIENTE
 // ==========================================

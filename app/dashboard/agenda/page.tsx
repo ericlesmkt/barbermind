@@ -90,7 +90,7 @@ export default function SmartAgenda() {
         .order('scheduled_at', { ascending: true });
 
       if (aptsData) {
-        const clientIds = aptsData.map(a => a.clients?.id).filter(Boolean);
+        const clientIds = aptsData.map((a: any) => a.clients?.id).filter(Boolean);
         let pendingOrders: any[] = [];
         
         if (clientIds.length > 0) {

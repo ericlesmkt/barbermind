@@ -41,21 +41,29 @@ export async function resetPassword(formData: FormData) {
   const email = formData.get('email') as string
   const supabase = await createClient()
 
-  // Precisamos dizer para onde o email deve mandar o usuário de volta!
-  const redirectTo = process.env.NEXT_PUBLIC_SITE_URL 
-    ? `${process.env.NEXT_PUBLIC_SITE_URL}/update-password` 
-    : 'http://localhost:3000/update-password'
+  // Lógica inteligente para pegar a URL oficial da Vercel ou Localhost
+  const getURL = () => {
+    let url =
+      process?.env?.NEXT_PUBLIC_SITE_URL ?? 
+      (process?.env?.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    // Garante que não tem barra no final
+    url = url.replace(/\/+$/, '')
+    return url
+  }
+
+  const redirectTo = `${getURL()}/update-password`
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo,
   })
 
   if (error) {
-    console.error('Erro ao enviar email de reset:', error.message)
-    throw new Error('Não foi possível enviar o email.')
+    console.error('Erro do Supabase ao enviar email:', error.message)
+    // Em vez de "throw new Error" (que causa a tela Application Error), redirecionamos com aviso:
+    return redirect(`/login?error=Erro ao enviar o email: ${error.message}`)
   }
 
-  // Redireciona para uma página de "Verifique seu email"
+  // Se deu tudo certo, Redireciona para a página de "Verifique seu email"
   redirect('/check-email') 
 }
 

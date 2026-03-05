@@ -47,8 +47,8 @@ export async function checkClientByPhone(phone: string) {
         .eq('client_id', client.id)
         .eq('status', 'active');
       
-      // Filtra para garantir que pacotes tenham cortes sobrando
-      const validSubscription = subscriptions?.find(sub => 
+      // Filtra para garantir que pacotes tenham cortes sobrando (CORREÇÃO DE TIPAGEM AQUI)
+      const validSubscription = subscriptions?.find((sub: any) => 
         sub.plans?.type === 'subscription' || 
         (sub.plans?.type === 'package' && (sub.remaining_cuts ?? 0) > 0)
       );
@@ -191,6 +191,7 @@ export async function submitBooking(bookingData: {
     throw new Error('Falha ao processar agendamento.')
   }
 }
+
 // ==========================================
 // 4. ADICIONAR PRODUTO AO CARRINHO (UPSELL)
 // ==========================================

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { login } from '@/app/actions/auth';
 
 // No Next.js 15, searchParams é uma Promise, então tratamos de forma assíncrona
@@ -73,7 +74,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </div>
           
           <div className="mt-8 text-center">
-            <p className="text-[10px] font-bold text-slate-400">Esqueceu a senha? Fale com o administrador.</p>
+            <Link 
+              href="/esqueci-a-senha" 
+              className="text-[11px] font-black text-indigo-500 hover:text-indigo-600 transition-colors uppercase tracking-wider"
+            >
+              Esqueceu a senha? Recuperar acesso
+            </Link>
           </div>
         </form>
 
